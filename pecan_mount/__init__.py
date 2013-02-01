@@ -1,5 +1,6 @@
 import httputil
 from pecan import request
+from pecan.core import Pecan as PecanApplication
 from pecan_mount._compat import native_to_unicode, py3k
 from pecan_mount.util import downgrade_wsgi_ux_to_1x
 
@@ -19,19 +20,19 @@ class MountMiddleware(object):
 
 
 class Tree(object):
-    """A registry of Pecan applications, mounted at diverse points.
+    """
+    A registry of Pecan applications, mounted at diverse points.
 
     An instance of this class may also be used as a WSGI callable
     (WSGI application object), in which case it dispatches to all
     mounted apps.
-    """
 
-    apps = {}
+    .. attribute:: apps
+    A dict of the form {script name: application}, where "script name" is
+    a string declaring the URI mount point (no trailing slash), and
+    "application" is an instance of pecan.Application (or an arbitrary WSGI
+    callable if you happen to be using a WSGI server).
     """
-    A dict of the form {script name: application}, where "script name"
-    is a string declaring the URI mount point (no trailing slash), and
-    "application" is an instance of pecan.Application (or an arbitrary
-    WSGI callable if you happen to be using a WSGI server)."""
 
     def __init__(self):
         self.apps = {}
@@ -69,21 +70,16 @@ class Tree(object):
         # Next line both 1) strips trailing slash and 2) maps "/" -> "".
         script_name = script_name.rstrip("/")
 
-        if isinstance(root, Application):
+        if isinstance(root, PecanApplication):
             app = root
             if script_name != "" and script_name != app.script_name:
                 raise ValueError("Cannot specify a different script name and "
                                  "pass an Application instance to pecan.mount")
             script_name = app.script_name
         else:
-            app = Application(root, script_name)
-
-            # If mounted at "", add favicon.ico
-            if (script_name == "" and root is not None
-                    and not hasattr(root, "favicon_ico")):
-                favicon = os.path.join(os.getcwd(), os.path.dirname(__file__),
-                                       "favicon.ico")
-                root.favicon_ico = tools.staticfile.handler(favicon)
+            from pecan.core import load_app
+            app = load_app(config)
+            app.script_name = script_name
 
         if config:
             app.merge(config)
