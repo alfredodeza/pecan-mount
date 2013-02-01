@@ -1,6 +1,6 @@
 import httputil
 from pecan import request
-from pecan_mount._compat import native_to_unicode
+from pecan_mount._compat import native_to_unicode, py3k
 from pecan_mount.util import downgrade_wsgi_ux_to_1x
 
 
@@ -105,7 +105,7 @@ class Tree(object):
         """
         if path is None:
             try:
-                request = pecan.request
+                # FIXME pecan requests don't have these attributes
                 path = httputil.urljoin(request.script_name,
                                         request.path_info)
             except AttributeError:
@@ -127,7 +127,7 @@ class Tree(object):
         # Try to look up the app using the full path.
         env1x = environ
         if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
-            env1x = _cpwsgi.downgrade_wsgi_ux_to_1x(environ)
+            env1x = downgrade_wsgi_ux_to_1x(environ)
         path = httputil.urljoin(env1x.get('SCRIPT_NAME', ''),
                                 env1x.get('PATH_INFO', ''))
         sn = self.script_name(path or "/")
