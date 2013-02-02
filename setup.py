@@ -13,6 +13,7 @@ setup(
     version=metadata['version'],
     description="Mount Pecan apps",
     long_description=LONG_DESCRIPTION,
+    install_requires = ['pecan'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
