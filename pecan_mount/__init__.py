@@ -2,21 +2,7 @@ import httputil
 from pecan import request
 from pecan.core import Pecan as PecanApplication
 from pecan_mount._compat import native_to_unicode, py3k
-from pecan_mount.util import downgrade_wsgi_ux_to_1x
-
-
-class MountMiddleware(object):
-
-    def __init__(self, root, application, script_name, configuration=None):
-        self.root = root # root app
-        self.application = application
-        self.configuration = configuration # what
-        self.script_name = script_name # do not allow ""
-
-    def __call__(self, environ, start_response):
-        if environ['PATH_INFO'].startswith(self.script_name):
-            return self.application(environ, start_response)
-        return self.root(environ, start_response)
+from pecan_mount.util import downgrade_wsgi_ux_to_1x, urljoin
 
 
 class Tree(object):
@@ -94,18 +80,17 @@ class Tree(object):
         script_name = script_name.rstrip("/")
         self.apps[script_name] = wsgi_callable
 
-    def script_name(self, path=None):
-        """The script_name of the app at the given path, or None.
-
-        If path is None, pecan.request is used.
+    def script_name(self, path):
         """
-        if path is None:
-            try:
-                # FIXME pecan requests don't have these attributes
-                path = httputil.urljoin(request.script_name,
-                                        request.path_info)
-            except AttributeError:
-                return None
+        The script_name of the app at the given path, or None.
+        """
+        # XXX If path is None, pecan.request could be used ?
+        #if path is None:
+        #    try:
+        #        # FIXME pecan requests don't have these attributes
+        #        path = urljoin(request.script_name, request.path_info)
+        #    except AttributeError:
+        #        return None
 
         while True:
             if path in self.apps:
@@ -118,13 +103,11 @@ class Tree(object):
             path = path[:path.rfind("/")]
 
     def __call__(self, environ, start_response):
-        # If you're calling this, then you're probably setting SCRIPT_NAME
-        # to '' (some WSGI servers always set SCRIPT_NAME to '').
         # Try to look up the app using the full path.
         env1x = environ
         if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
             env1x = downgrade_wsgi_ux_to_1x(environ)
-        path = httputil.urljoin(env1x.get('SCRIPT_NAME', ''),
+        path = urljoin(env1x.get('SCRIPT_NAME', ''),
                                 env1x.get('PATH_INFO', ''))
         sn = self.script_name(path or "/")
         if sn is None:
