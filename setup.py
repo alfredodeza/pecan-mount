@@ -2,18 +2,17 @@ from setuptools import setup, find_packages
 import os
 import re
 
-# XXX Get this working
-#readme = os.path.join(os.path.dirname(__file__), 'README.rst')
-#LONG_DESCRIPTION = open(readme).read()
-#
-#module_file = open("pecan_mount/__init__.py").read()
-#metadata = dict(re.findall("__([a-z]+)__\s*=\s*'([^']+)'", module_file))
+readme = os.path.join(os.path.dirname(__file__), 'README.rst')
+LONG_DESCRIPTION = open(readme).read()
+
+module_file = open("pecan_mount/__init__.py").read()
+metadata = dict(re.findall("__([a-z]+)__\s*=\s*'([^']+)'", module_file))
 
 setup(
     name='pecan-mount',
-    version='0.0.1',
+    version=metadata['version'],
     description="Mount Pecan apps",
-    long_description=None,
+    long_description=LONG_DESCRIPTION,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
