@@ -21,15 +21,6 @@ class Tree(object):
     def __init__(self):
         self.apps = {}
 
-    def app_name(self, script_name):
-        """
-        Return the name of the app mounted for a given script_name
-        or None.
-        """
-        if script_name in self.apps:
-            return self.apps[script_name].__class__.__name__
-        return None
-
     def mount(self, script_name="", config=None):
         """Mount a new app from a root object, script_name, and config.
 
@@ -53,7 +44,7 @@ class Tree(object):
         if script_name in self.apps:
             raise AttributeError(
                 "The script_name <'%s'> is already mounted for app "
-                "<%s>" % (script_name, self.app_name(script_name)))
+                "<%s>" % (script_name, name_from_path(script_name)))
 
         # Next line both 1) strips trailing slash and 2) maps "/" -> "".
         script_name = script_name.rstrip("/")
