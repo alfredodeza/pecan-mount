@@ -5,4 +5,4 @@ class RootController(object):
 
     @expose()
     def index(self):
-        return {}
+        return 'Root Index'

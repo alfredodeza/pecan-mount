@@ -58,3 +58,8 @@ class TestTreeScriptName(object):
     def test_return_nested_path(self):
         pecan_mount.tree.mount(None, '/foo', self.conf)
         assert pecan_mount.tree.script_name('/foo/bar/baz') == '/foo'
+
+    def test_return_none_if_path_is_empty(self):
+        # if is emtpy and is not in self.apps
+        pecan_mount.tree.mount(None, '/foo', self.conf)
+        assert pecan_mount.tree.script_name('') == None
