@@ -133,3 +133,16 @@ class Tree(object):
         return app(environ, start_response)
 
 
+#
+# Helpers
+#
+def name_from_path(path):
+    """
+    Given a path, try to determine the name for it, replacing
+    slashes for dots.
+    Alternatively, just return 'root' if nothing is passed to
+    this helper.
+    """
+    if not path:
+        return 'root'
+    return path.strip('/').replace('/', '.')
