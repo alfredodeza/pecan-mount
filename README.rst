@@ -41,3 +41,18 @@ called `wsgi.py`::
     pecan_mount.tree.mount('/_metrics', '/path/to/metrics_config.py')
 
     application = pecan_mount.tree 
+
+
+Naming the mounts
+-----------------
+Optionally, when mounting, you can pass in a ``mount_name`` that will be used
+added to the WSGI app as an attribute. This is useful when debugging or when
+you need to have a better representation of what application is mounted at some
+point.
+
+If no ``mount_name`` is passed in to the ``mount`` callable, it will default to
+inferring the name from the ``script_name``, which in turn will use ``root``
+for empty strings or None and for dotted convertions for other paths.
+
+For example, a ``script_name`` that looks like: ``/foo/bar`` will be translated
+to a ``mount_name`` of ``foo.bar``.
