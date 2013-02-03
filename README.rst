@@ -56,3 +56,12 @@ for empty strings or None and for dotted convertions for other paths.
 
 For example, a ``script_name`` that looks like: ``/foo/bar`` will be translated
 to a ``mount_name`` of ``foo.bar``.
+
+
+Preventing overriding of mounts
+-------------------------------
+The ``tree`` object will prevent you from mounting applications in locations
+where there is already an app mounted. This is convenient when there are
+multiple applications mounted and unkowingly a new app is using a location
+already taken. An ``AttributeError`` will be raised to indicate what
+application at what mount point is being used and prevent further execution.
