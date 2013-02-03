@@ -96,7 +96,7 @@ class Tree(object):
         if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
             env1x = downgrade_wsgi_ux_to_1x(environ)
         path = urljoin(env1x.get('SCRIPT_NAME', ''),
-                                env1x.get('PATH_INFO', ''))
+                       env1x.get('PATH_INFO', ''))
         sn = self.script_name(path or "/")
         if sn is None:
             start_response('404 Not Found', [])
@@ -107,6 +107,8 @@ class Tree(object):
         # Correct the SCRIPT_NAME and PATH_INFO environ entries.
         # Note that we are not modifying SCRIPT_NAME until Pecan issue #175
         # gets fixed
+        # Ideally, we would update the SCRIPT_NAME here with the proper
+        # value from the app that was mounted
         environ = environ.copy()
         if not py3k:
             if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
@@ -121,11 +123,11 @@ class Tree(object):
         else:
             if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
                 # Python 3/WSGI u.0: all strings MUST be full unicode
-                environ['SCRIPT_NAME'] = sn
+#                environ['SCRIPT_NAME'] = sn
                 environ['PATH_INFO'] = path[len(sn.rstrip("/")):]
             else:
                 # Python 3/WSGI 1.x: all strings MUST be ISO-8859-1 str
-                environ['SCRIPT_NAME'] = sn.encode('utf-8').decode('ISO-8859-1')
+#                environ['SCRIPT_NAME'] = sn.encode('utf-8').decode('ISO-8859-1')
                 environ['PATH_INFO'] = path[len(sn.rstrip("/")):].encode('utf-8').decode('ISO-8859-1')
 
         return app(environ, start_response)
