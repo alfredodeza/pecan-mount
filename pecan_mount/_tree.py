@@ -30,13 +30,8 @@ class Tree(object):
             return self.apps[script_name].__class__.__name__
         return None
 
-    def mount(self, root, script_name="", config=None):
+    def mount(self, script_name="", config=None):
         """Mount a new app from a root object, script_name, and config.
-
-        # XXX we might not need a root
-        root
-            An instance of a "controller class" (a collection of page
-            handler methods) which represents the root of the application.
 
         script_name
             A string containing the "mount point" of the application.
@@ -51,13 +46,8 @@ class Tree(object):
         config
             A file or dict containing application config.
         """
-        if script_name is None:
-            raise TypeError(
-                "The 'script_name' argument may not be None. Application "
-                "objects may, however, possess a script_name of None (in "
-                "order to inpect the WSGI environ for SCRIPT_NAME upon each "
-                "request). You cannot mount such Applications on this Tree; "
-                "you must pass them to a WSGI server interface directly.")
+        # Prevent a None value *always*
+        script_name = script_name or ""
 
         # Prevent stepping over something already mounted
         if script_name in self.apps:
@@ -68,16 +58,9 @@ class Tree(object):
         # Next line both 1) strips trailing slash and 2) maps "/" -> "".
         script_name = script_name.rstrip("/")
 
-        if isinstance(root, PecanApplication):
-            app = root
-            if script_name != "" and script_name != app.script_name:
-                raise ValueError("Cannot specify a different script name and "
-                                 "pass an Application instance to pecan.mount")
-            script_name = app.script_name
-        else:
-            from pecan.core import load_app
-            app = load_app(config)
-            app.script_name = script_name
+        from pecan.core import load_app
+        app = load_app(config)
+        app.script_name = script_name
 
         # FIXME: we need to try and merge the config here
         #if config:
@@ -97,14 +80,6 @@ class Tree(object):
         """
         The script_name of the app at the given path, or None.
         """
-        # XXX If path is None, pecan.request could be used ?
-        #if path is None:
-        #    try:
-        #        # FIXME pecan requests don't have these attributes
-        #        path = urljoin(request.script_name, request.path_info)
-        #    except AttributeError:
-        #        return None
-
         while True:
             if path in self.apps:
                 return path
@@ -130,6 +105,8 @@ class Tree(object):
         app = self.apps[sn]
 
         # Correct the SCRIPT_NAME and PATH_INFO environ entries.
+        # Note that we are not modifying SCRIPT_NAME until Pecan issue #175
+        # gets fixed
         environ = environ.copy()
         if not py3k:
             if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
