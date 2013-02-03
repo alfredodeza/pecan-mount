@@ -21,7 +21,7 @@ class Tree(object):
     def __init__(self):
         self.apps = {}
 
-    def mount(self, script_name="", config=None):
+    def mount(self, script_name="", config=None, mount_name=""):
         """Mount a new app from a root object, script_name, and config.
 
         script_name
@@ -36,15 +36,22 @@ class Tree(object):
 
         config
             A file or dict containing application config.
+
+        mount_name
+            An optional name to give the mount, by default this class will
+            infer the name using the script_name as a base. This is useful when
+            debugging and wanting to get a better representation of what
+            application is mounted where.
         """
         # Prevent a None value *always*
         script_name = script_name or ""
+        mount_name = mount_name or name_from_path(script_name)
 
         # Prevent stepping over something already mounted
         if script_name in self.apps:
             raise AttributeError(
                 "The script_name <'%s'> is already mounted for app "
-                "<%s>" % (script_name, name_from_path(script_name)))
+                "<%s>" % (script_name, mount_name))
 
         # Next line both 1) strips trailing slash and 2) maps "/" -> "".
         script_name = script_name.rstrip("/")
@@ -52,6 +59,7 @@ class Tree(object):
         from pecan.core import load_app
         app = load_app(config)
         app.script_name = script_name
+        app.mount_name = mount_name
 
         # FIXME: we need to try and merge the config here
         #if config:
