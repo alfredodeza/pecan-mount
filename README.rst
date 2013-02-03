@@ -6,4 +6,38 @@ A utility to mount Pecan applications at different points to act as one.
 
 Adding applications
 -------------------
+Pecan applications are usually mounted at `/` and they do not have an easy way
+to be able to compound different apps working in unison. If you are using
+`pecan_mount` you need to use the tree as the actual WSGI application as it
+acts as WSGI middleware to properly return the apps at given mount points.
 
+You only need two things for mounting an app, an application configuration and
+the mount point. The configuration can be either a path to a file or
+a dictionary (Pecan takes care of this loading for us). So to mount a single
+application at `/application` with a configuration file living in
+`/path/to/config.py` it would look like this::
+
+    import pecan_mount
+    pecan_mount.tree.mount('/application', '/path/to/config.py')
+
+The nice things about Pecan configuration is that it will take care of finding
+the right modules and everything necessary for your application. At most, the
+important decision here is the mount point.
+
+
+Runnig multiple applications
+----------------------------
+Ideally, you would want to mount all the applications you need in one place,
+and this place should be where the WSGI application is constructed so that it
+can be consumed by a WSGI server (for example `gunicorn` or Apache with
+`mod_wsgi`). This is how having 4 different applications would look in a file
+called `wsgi.py`::
+
+    import pecan_mount
+
+    pecan_mount.tree.mount('/', '/path/to/main_config.py')
+    pecan_mount.tree.mount('/admin', '/path/to/admin_config.py')
+    pecan_mount.tree.mount('/registration', '/path/to/registration_config.py')
+    pecan_mount.tree.mount('/_metrics', '/path/to/metrics_config.py')
+
+    application = pecan_mount.tree 
