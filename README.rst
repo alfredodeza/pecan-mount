@@ -65,3 +65,16 @@ where there is already an app mounted. This is convenient when there are
 multiple applications mounted and unknowingly a new app is using a location
 already taken. An ``AttributeError`` will be raised to indicate what
 application at what mount point is being used and prevent further execution.
+
+
+Mounting other WSGI apps
+------------------------
+Other WSGI applications can also be mounted easily. The WSGI app will need to
+be properly configured before mounting and will use a different callable::
+
+    import pecan_mount
+    import my_app
+    
+    my_wsgi_app = my_app()
+
+    pecan_mount.tree.graft(my_app, '/mount_point')
