@@ -25,7 +25,7 @@ the right modules and everything necessary for your application. At most, the
 important decision here is the mount point.
 
 
-Runnig multiple applications
+Running multiple applications
 ----------------------------
 Ideally, you would want to mount all the applications you need in one place,
 and this place should be where the WSGI application is constructed so that it
@@ -52,7 +52,7 @@ point.
 
 If no ``mount_name`` is passed in to the ``mount`` callable, it will default to
 inferring the name from the ``script_name``, which in turn will use ``root``
-for empty strings or None and for dotted convertions for other paths.
+for empty strings or None and for dotted conversions for other paths.
 
 For example, a ``script_name`` that looks like: ``/foo/bar`` will be translated
 to a ``mount_name`` of ``foo.bar``.
@@ -62,6 +62,6 @@ Preventing overriding of mounts
 -------------------------------
 The ``tree`` object will prevent you from mounting applications in locations
 where there is already an app mounted. This is convenient when there are
-multiple applications mounted and unkowingly a new app is using a location
+multiple applications mounted and unknowingly a new app is using a location
 already taken. An ``AttributeError`` will be raised to indicate what
 application at what mount point is being used and prevent further execution.
