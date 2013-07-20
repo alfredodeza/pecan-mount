@@ -30,7 +30,7 @@ setup(
     keywords='mount, pecan, wsgi',
     packages=find_packages(),
     author='Alfredo Deza',
-    author_email='alfredodeza [at] gmail.com',
+    author_email='alfredo [at] deza.pe',
     license='MIT',
     zip_safe=False,
     # At some point we ought to add this
