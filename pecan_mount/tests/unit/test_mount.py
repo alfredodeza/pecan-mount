@@ -28,8 +28,8 @@ class TestTreeMount(object):
         pecan_mount.tree.mount( '', self.conf)
         with raises(AttributeError) as exc:
             pecan_mount.tree.mount('', self.conf)
-        assert "script_name <''" in exc.value[0]
-        assert 'is already mounted' in exc.value[0]
+        assert "script_name <''" in exc.value.args[0]
+        assert 'is already mounted' in exc.value.args[0]
 
     def test_strip_trailing_slash(self):
         pecan_mount.tree.mount('/foo/', self.conf)
