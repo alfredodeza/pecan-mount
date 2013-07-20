@@ -31,8 +31,8 @@ setup(
     license='MIT',
     zip_safe=False,
     # At some point we ought to add this
-    #entry_points="""
-    #[pecan.extension]
-    #mount = pecan_mount
-    #"""
+    entry_points="""
+    [pecan.extension]
+    mount = pecan_mount
+    """
 )
