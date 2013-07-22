@@ -104,8 +104,6 @@ class Tree(object):
         app = self.apps[sn]
 
         # Correct the SCRIPT_NAME and PATH_INFO environ entries.
-        # Note that we are not modifying SCRIPT_NAME until Pecan issue #175
-        # gets fixed
         # Ideally, we would update the SCRIPT_NAME here with the proper
         # value from the app that was mounted
         environ = environ.copy()
@@ -113,20 +111,20 @@ class Tree(object):
             if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
                 # Python 2/WSGI u.0: all strings MUST be of type unicode
                 enc = environ[native_to_unicode('wsgi.url_encoding')]
-#                environ[native_to_unicode('SCRIPT_NAME')] = sn.decode(enc)
+                environ[native_to_unicode('SCRIPT_NAME')] = sn.decode(enc)
                 environ[native_to_unicode('PATH_INFO')] = path[len(sn.rstrip("/")):].decode(enc)
             else:
                 # Python 2/WSGI 1.x: all strings MUST be of type str
-#                environ['SCRIPT_NAME'] = sn
+                environ['SCRIPT_NAME'] = sn
                 environ['PATH_INFO'] = path[len(sn.rstrip("/")):]
         else:
             if environ.get(native_to_unicode('wsgi.version')) == (native_to_unicode('u'), 0):
                 # Python 3/WSGI u.0: all strings MUST be full unicode
-#                environ['SCRIPT_NAME'] = sn
+                environ['SCRIPT_NAME'] = sn
                 environ['PATH_INFO'] = path[len(sn.rstrip("/")):]
             else:
                 # Python 3/WSGI 1.x: all strings MUST be ISO-8859-1 str
-#                environ['SCRIPT_NAME'] = sn.encode('utf-8').decode('ISO-8859-1')
+                environ['SCRIPT_NAME'] = sn.encode('utf-8').decode('ISO-8859-1')
                 environ['PATH_INFO'] = path[len(sn.rstrip("/")):].encode('utf-8').decode('ISO-8859-1')
 
         return app(environ, start_response)
